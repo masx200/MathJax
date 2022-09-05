@@ -318,9 +318,7 @@
               },
               prototype: {
                 Init: function () {},
-                SUPER: function (t) {
-                  return t.callee.SUPER;
-                },
+                SUPER: function (fncallee) {return fncallee.SUPER},
                 can: function (t) {
                   return "function" == typeof this[t];
                 },
