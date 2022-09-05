@@ -264,124 +264,141 @@
                 }
                 return e;
               };
-            e.Object = n({
-              constructor: function () {
-                return arguments.callee.Init.call(this, arguments);
-              },
-              Subclass: function (t, e) {
-                var n = function () {
-                  return arguments.callee.Init.call(this, arguments);
-                };
-                return n.SUPER = this,
-                  n.Init = this.Init,
-                  n.Subclass = this.Subclass,
-                  n.Augment = this.Augment,
-                  n.protoFunction = this.protoFunction,
-                  n.can = this.can,
-                  n.has = this.has,
-                  n.isa = this.isa,
-                  n.prototype = new this(i),
-                  n.prototype.constructor = n,
-                  n.Augment(t, e),
-                  n;
-              },
-              Init: function (t) {
-                var e = this;
-                return 1 === t.length && t[0] === i
-                  ? e
-                  : (e instanceof t.callee || (e = new t.callee(i)),
-                    e.Init.apply(e, t) || e);
-              },
-              Augment: function (t, e) {
-                var i;
-                if (null != t) {
-                  for (i in t) {
-                    t.hasOwnProperty(i) && this.protoFunction(i, t[i]);
-                  }
-                  t.toString !== this.prototype.toString &&
-                    t.toString !== {}.toString &&
-                    this.protoFunction("toString", t.toString);
-                }
-                if (null != e) {
-                  for (i in e) e.hasOwnProperty(i) && (this[i] = e[i]);
-                }
-                return this;
-              },
-              protoFunction: function (t, e) {
-                this.prototype[t] = e,
-                  "function" == typeof e && (e.SUPER = this.SUPER.prototype);
-              },
-              prototype: {
-                Init: function () {},
-                SUPER: function (t) {
-                  return t.callee.SUPER;
+            (e.Object = n({
+                constructor: function aaa() {
+                    return aaa.Init.call(
+                        this,
+                        Object.assign(arguments, { call: aaa })
+                    );
+                },
+                Subclass: function (t, e) {
+                    var n = function () {
+                        return arguments.callee.Init.call(this, arguments);
+                    };
+                    return (
+                        (n.SUPER = this),
+                        (n.Init = this.Init),
+                        (n.Subclass = this.Subclass),
+                        (n.Augment = this.Augment),
+                        (n.protoFunction = this.protoFunction),
+                        (n.can = this.can),
+                        (n.has = this.has),
+                        (n.isa = this.isa),
+                        (n.prototype = new this(i)),
+                        (n.prototype.constructor = n),
+                        n.Augment(t, e),
+                        n
+                    );
+                },
+                Init: function (t) {
+                    var e = this;
+                    return 1 === t.length && t[0] === i
+                        ? e
+                        : (e instanceof t.callee || (e = new t.callee(i)),
+                          e.Init.apply(e, t) || e);
+                },
+                Augment: function (t, e) {
+                    var i;
+                    if (null != t) {
+                        for (i in t) {
+                            t.hasOwnProperty(i) && this.protoFunction(i, t[i]);
+                        }
+                        t.toString !== this.prototype.toString &&
+                            t.toString !== {}.toString &&
+                            this.protoFunction("toString", t.toString);
+                    }
+                    if (null != e) {
+                        for (i in e) e.hasOwnProperty(i) && (this[i] = e[i]);
+                    }
+                    return this;
+                },
+                protoFunction: function (t, e) {
+                    (this.prototype[t] = e),
+                        "function" == typeof e &&
+                            (e.SUPER = this.SUPER.prototype);
+                },
+                prototype: {
+                    Init: function () {},
+                    SUPER: function (t) {
+                        return t.callee.SUPER;
+                    },
+                    can: function (t) {
+                        return "function" == typeof this[t];
+                    },
+                    has: function (t) {
+                        return void 0 !== this[t];
+                    },
+                    isa: function (t) {
+                        return t instanceof Object && this instanceof t;
+                    },
                 },
                 can: function (t) {
-                  return "function" == typeof this[t];
+                    return this.prototype.can.call(this, t);
                 },
                 has: function (t) {
-                  return void 0 !== this[t];
+                    return this.prototype.has.call(this, t);
                 },
                 isa: function (t) {
-                  return t instanceof Object && this instanceof t;
-                },
-              },
-              can: function (t) {
-                return this.prototype.can.call(this, t);
-              },
-              has: function (t) {
-                return this.prototype.has.call(this, t);
-              },
-              isa: function (t) {
-                for (var e = this; e;) {
-                  if (e === t) return !0;
-                  e = e.SUPER;
-                }
-                return !1;
-              },
-              SimpleSUPER: n({
-                constructor: function (t) {
-                  return this.SimpleSUPER.define(t);
-                },
-                define: function (t) {
-                  var e = {};
-                  if (null != t) {
-                    for (var i in t) {
-                      t.hasOwnProperty(i) && (e[i] = this.wrap(i, t[i]));
+                    for (var e = this; e; ) {
+                        if (e === t) return !0;
+                        e = e.SUPER;
                     }
-                    t.toString !== this.prototype.toString &&
-                      t.toString !== {}.toString &&
-                      (e.toString = this.wrap("toString", t.toString));
-                  }
-                  return e;
+                    return !1;
                 },
-                wrap: function (t, e) {
-                  if (
-                    "function" != typeof e ||
-                    !e.toString().match(/\.\s*SUPER\s*\(/)
-                  ) {
-                    return e;
-                  }
-                  var i = function () {
-                    this.SUPER = i.SUPER[t];
-                    try {
-                      var n = e.apply(this, arguments);
-                    } catch (t) {
-                      throw delete this.SUPER, t;
-                    }
-                    return delete this.SUPER, n;
-                  };
-                  return i.toString = function () {
-                    return e.toString.apply(e, arguments);
-                  },
-                    i;
-                },
-              }),
-            }),
-              e.Object.isArray = Array.isArray || function (t) {
-                return "[object Array]" === Object.prototype.toString.call(t);
-              },
-              e.Object.Array = Array;
+                SimpleSUPER: n({
+                    constructor: function (t) {
+                        return this.SimpleSUPER.define(t);
+                    },
+                    define: function (t) {
+                        var e = {};
+                        if (null != t) {
+                            for (var i in t) {
+                                t.hasOwnProperty(i) &&
+                                    (e[i] = this.wrap(i, t[i]));
+                            }
+                            t.toString !== this.prototype.toString &&
+                                t.toString !== {}.toString &&
+                                (e.toString = this.wrap(
+                                    "toString",
+                                    t.toString
+                                ));
+                        }
+                        return e;
+                    },
+                    wrap: function (t, e) {
+                        if (
+                            "function" != typeof e ||
+                            !e.toString().match(/\.\s*SUPER\s*\(/)
+                        ) {
+                            return e;
+                        }
+                        var i = function () {
+                            this.SUPER = i.SUPER[t];
+                            try {
+                                var n = e.apply(this, arguments);
+                            } catch (t) {
+                                throw (delete this.SUPER, t);
+                            }
+                            return delete this.SUPER, n;
+                        };
+                        return (
+                            (i.toString = function () {
+                                return e.toString.apply(e, arguments);
+                            }),
+                            i
+                        );
+                    },
+                }),
+            })),
+                (e.Object.isArray =
+                    Array.isArray ||
+                    function (t) {
+                        return (
+                            "[object Array]" ===
+                            Object.prototype.toString.call(t)
+                        );
+                    }),
+                (e.Object.Array = Array);
           }(),
           function (t) {
             var e = u.MathJax;
