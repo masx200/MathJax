@@ -318,7 +318,9 @@
               },
               prototype: {
                 Init: function () {},
-                SUPER: function (fncall) {return fncall.SUPER},
+                SUPER: function (fncall) {
+                  return fncall.SUPER;
+                },
                 can: function (t) {
                   return "function" == typeof this[t];
                 },
@@ -400,7 +402,7 @@
             e || (e = u.MathJax = {});
             var i = function (t) {
               var e = function ccc() {
-                  return ccc.execute.apply(ccc, arguments);
+                return ccc.execute.apply(ccc, arguments);
               };
               for (var n in i.prototype) {
                 i.prototype.hasOwnProperty(n) &&
@@ -2146,287 +2148,304 @@
             },
           }),
           function (t) {
-            t.mbase = MathJax.Object.Subclass({
-              type: "base",
-              isToken: !1,
-              defaults: {
-                mathbackground: t.INHERIT,
-                mathcolor: t.INHERIT,
-                dir: t.INHERIT,
-              },
-              noInherit: {},
-              noInheritAttribute: { texClass: !0 },
-              getRemoved: {},
-              linebreakContainer: !1,
-              Init: function () {
-                this.data = [],
-                  !this.inferRow ||
-                  1 === arguments.length && arguments[0].inferred ||
-                  this.Append(t.mrow().With({ inferred: !0, notParent: !0 })),
-                  this.Append.apply(this, arguments);
-              },
-              With: function (t) {
-                for (var e in t) t.hasOwnProperty(e) && (this[e] = t[e]);
-                return this;
-              },
-              Append: function () {
-                if (this.inferRow && this.data.length) {
-                  this.data[0].Append.apply(this.data[0], arguments);
-                } else {
-                  for (var t = 0, e = arguments.length; t < e; t++) {
-                    this.SetData(this.data.length, arguments[t]);
+            (t.mbase = MathJax.Object.Subclass(
+              {
+                type: "base",
+                isToken: !1,
+                defaults: {
+                  mathbackground: t.INHERIT,
+                  mathcolor: t.INHERIT,
+                  dir: t.INHERIT,
+                },
+                noInherit: {},
+                noInheritAttribute: { texClass: !0 },
+                getRemoved: {},
+                linebreakContainer: !1,
+                Init: function () {
+                  (this.data = []),
+                    !this.inferRow ||
+                    (1 === arguments.length &&
+                      arguments[0].inferred) ||
+                    this.Append(
+                      t
+                        .mrow()
+                        .With({ inferred: !0, notParent: !0 }),
+                    ),
+                    this.Append.apply(this, arguments);
+                },
+                With: function (t) {
+                  for (var e in t) {
+                    t.hasOwnProperty(e) && (this[e] = t[e]);
                   }
-                }
-              },
-              SetData: function (e, i) {
-                null != i &&
-                (i instanceof t.mbase ||
-                  (i = this.isToken || this.isChars ? t.chars(i) : t.mtext(i)),
-                  i.parent = this,
-                  i.setInherit(this.inheritFromMe ? this : this.inherit)),
-                  this.data[e] = i;
-              },
-              Parent: function () {
-                for (var t = this.parent; t && t.notParent;) t = t.parent;
-                return t;
-              },
-              Get: function (e, i, n) {
-                if (!n) {
-                  if (null != this[e]) return this[e];
-                  if (this.attr && null != this.attr[e]) return this.attr[e];
-                }
-                var a = this.Parent();
-                if (a && null != a["adjustChild_" + e]) {
-                  return a["adjustChild_" + e](this.childPosition(), i);
-                }
-                for (var s = this.inherit, r = s; s;) {
-                  var o = s[e];
-                  if (
-                    null == o && s.attr && (o = s.attr[e]),
-                      s.removedStyles && s.getRemoved[e] && null == o &&
-                      (o = s.removedStyles[s.getRemoved[e]]),
-                      null != o && s.noInheritAttribute &&
-                      !s.noInheritAttribute[e]
-                  ) {
-                    var l = s.noInherit[this.type];
-                    if (!l || !l[e]) return o;
+                  return this;
+                },
+                Append: function () {
+                  if (this.inferRow && this.data.length) {
+                    this.data[0].Append.apply(this.data[0], arguments);
+                  } else {
+                    for (var t = 0, e = arguments.length; t < e; t++) {
+                      this.SetData(this.data.length, arguments[t]);
+                    }
                   }
-                  r = s, s = s.inherit;
-                }
-                if (!i) {
-                  if (this.defaults[e] === t.AUTO) return this.autoDefault(e);
-                  if (
-                    this.defaults[e] !== t.INHERIT && null != this.defaults[e]
-                  ) {
-                    return this.defaults[e];
+                },
+                SetData: function (e, i) {
+                  null != i &&
+                  (i instanceof t.mbase ||
+                    (i = this.isToken || this.isChars
+                      ? t.chars(i)
+                      : t.mtext(i)),
+                    (i.parent = this),
+                    i.setInherit(
+                      this.inheritFromMe ? this : this.inherit,
+                    )), (this.data[e] = i);
+                },
+                Parent: function () {
+                  for (var t = this.parent; t && t.notParent;) {
+                    t = t.parent;
                   }
-                  if (r) return r.defaults[e];
-                }
-                return null;
-              },
-              hasValue: function (t) {
-                return null != this.Get(t, !0);
-              },
-              getValues: function () {
-                for (
-                  var t = {}, e = 0, i = arguments.length;
-                  e < i;
-                  e++
-                ) {
-                  t[arguments[e]] = this.Get(arguments[e]);
-                }
-                return t;
-              },
-              adjustChild_scriptlevel: function (t, e) {
-                return this.Get("scriptlevel", e);
-              },
-              adjustChild_displaystyle: function (t, e) {
-                return this.Get("displaystyle", e);
-              },
-              adjustChild_texprimestyle: function (t, e) {
-                return this.Get("texprimestyle", e);
-              },
-              childPosition: function () {
-                for (var t = this, e = t.parent; e.notParent;) {
-                  e = (t = e).parent;
-                }
-                for (
-                  var i = 0, n = e.data.length;
-                  i < n;
-                  i++
-                ) {
-                  if (e.data[i] === t) {
-                    return i;
+                  return t;
+                },
+                Get: function (e, i, n) {
+                  if (!n) {
+                    if (null != this[e]) return this[e];
+                    if (this.attr && null != this.attr[e]) {
+                      return this.attr[e];
+                    }
                   }
-                }
-                return null;
-              },
-              setInherit: function (t) {
-                if (t !== this.inherit && null == this.inherit) {
-                  this.inherit = t;
+                  var a = this.Parent();
+                  if (a && null != a["adjustChild_" + e]) {
+                    return a["adjustChild_" + e](
+                      this.childPosition(),
+                      i,
+                    );
+                  }
+                  for (var s = this.inherit, r = s; s;) {
+                    var o = s[e];
+                    if (
+                      (null == o && s.attr && (o = s.attr[e]),
+                        s.removedStyles &&
+                        s.getRemoved[e] &&
+                        null == o &&
+                        (o = s.removedStyles[s.getRemoved[e]]),
+                        null != o &&
+                        s.noInheritAttribute &&
+                        !s.noInheritAttribute[e])
+                    ) {
+                      var l = s.noInherit[this.type];
+                      if (!l || !l[e]) return o;
+                    }
+                    (r = s), (s = s.inherit);
+                  }
+                  if (!i) {
+                    if (this.defaults[e] === t.AUTO) {
+                      return this.autoDefault(e);
+                    }
+                    if (
+                      this.defaults[e] !== t.INHERIT &&
+                      null != this.defaults[e]
+                    ) {
+                      return this.defaults[e];
+                    }
+                    if (r) return r.defaults[e];
+                  }
+                  return null;
+                },
+                hasValue: function (t) {
+                  return null != this.Get(t, !0);
+                },
+                getValues: function () {
                   for (
-                    var e = 0, i = this.data.length;
+                    var t = {}, e = 0, i = arguments.length;
                     e < i;
                     e++
                   ) {
-                    this.data[e] && this.data[e].setInherit &&
-                      this.data[e].setInherit(t);
+                    t[arguments[e]] = this.Get(arguments[e]);
                   }
-                }
+                  return t;
+                },
+                adjustChild_scriptlevel: function (t, e) {
+                  return this.Get("scriptlevel", e);
+                },
+                adjustChild_displaystyle: function (t, e) {
+                  return this.Get("displaystyle", e);
+                },
+                adjustChild_texprimestyle: function (t, e) {
+                  return this.Get("texprimestyle", e);
+                },
+                childPosition: function () {
+                  for (var t = this, e = t.parent; e.notParent;) {
+                    e = (t = e).parent;
+                  }
+                  for (var i = 0, n = e.data.length; i < n; i++) {
+                    if (e.data[i] === t) {
+                      return i;
+                    }
+                  }
+                  return null;
+                },
+                setInherit: function (t) {
+                  if (t !== this.inherit && null == this.inherit) {
+                    this.inherit = t;
+                    for (var e = 0, i = this.data.length; e < i; e++) {
+                      this.data[e] &&
+                        this.data[e].setInherit &&
+                        this.data[e].setInherit(t);
+                    }
+                  }
+                },
+                setTeXclass: function (t) {
+                  return (
+                    this.getPrevClass(t), void 0 !== this.texClass ? this : t
+                  );
+                },
+                getPrevClass: function (t) {
+                  t &&
+                    ((this.prevClass = t.Get("texClass")),
+                      (this.prevLevel = t.Get("scriptlevel")));
+                },
+                updateTeXclass: function (t) {
+                  t &&
+                    ((this.prevClass = t.prevClass),
+                      delete t.prevClass,
+                      (this.prevLevel = t.prevLevel),
+                      delete t.prevLevel,
+                      (this.texClass = t.Get("texClass")));
+                },
+                texSpacing: function () {
+                  var e = null != this.prevClass
+                      ? this.prevClass
+                      : t.TEXCLASS.NONE,
+                    i = this.Get("texClass") || t.TEXCLASS.ORD;
+                  if (e === t.TEXCLASS.NONE || i === t.TEXCLASS.NONE) {
+                    return "";
+                  }
+                  e === t.TEXCLASS.VCENTER && (e = t.TEXCLASS.ORD),
+                    i === t.TEXCLASS.VCENTER && (i = t.TEXCLASS.ORD);
+                  var n = this.TEXSPACE[e][i];
+                  return (this.prevLevel > 0 ||
+                      this.Get("scriptlevel") > 0) &&
+                      n >= 0
+                    ? ""
+                    : this.TEXSPACELENGTH[Math.abs(n)];
+                },
+                TEXSPACELENGTH: [
+                  "",
+                  t.LENGTH.THINMATHSPACE,
+                  t.LENGTH.MEDIUMMATHSPACE,
+                  t.LENGTH.THICKMATHSPACE,
+                ],
+                TEXSPACE: [
+                  [0, -1, 2, 3, 0, 0, 0, 1],
+                  [-1, -1, 0, 3, 0, 0, 0, 1],
+                  [2, 2, 0, 0, 2, 0, 0, 2],
+                  [3, 3, 0, 0, 3, 0, 0, 3],
+                  [0, 0, 0, 0, 0, 0, 0, 0],
+                  [0, -1, 2, 3, 0, 0, 0, 1],
+                  [1, 1, 0, 1, 1, 1, 1, 1],
+                  [1, -1, 2, 3, 1, 0, 1, 1],
+                ],
+                autoDefault: function (t) {
+                  return "";
+                },
+                isSpacelike: function () {
+                  return !1;
+                },
+                isEmbellished: function () {
+                  return !1;
+                },
+                Core: function () {
+                  return this;
+                },
+                CoreMO: function () {
+                  return this;
+                },
+                childIndex: function (t) {
+                  if (null != t) {
+                    for (var e = 0, i = this.data.length; e < i; e++) {
+                      if (t === this.data[e]) return e;
+                    }
+                  }
+                },
+                CoreIndex: function () {
+                  return (
+                    (this.inferRow && this.data[0]) ||
+                    this
+                  ).childIndex(this.Core());
+                },
+                hasNewline: function () {
+                  if (this.isEmbellished()) {
+                    return this.CoreMO().hasNewline();
+                  }
+                  if (this.isToken || this.linebreakContainer) return !1;
+                  for (var t = 0, e = this.data.length; t < e; t++) {
+                    if (this.data[t] && this.data[t].hasNewline()) {
+                      return !0;
+                    }
+                  }
+                  return !1;
+                },
+                array: function () {
+                  return this.inferred ? this.data : [this];
+                },
+                toString: function () {
+                  return this.type + "(" + this.data.join(",") + ")";
+                },
+                getAnnotation: function () {
+                  return null;
+                },
               },
-              setTeXclass: function (t) {
-                return this.getPrevClass(t),
-                  void 0 !== this.texClass ? this : t;
-              },
-              getPrevClass: function (t) {
-                t &&
-                  (this.prevClass = t.Get("texClass"),
-                    this.prevLevel = t.Get("scriptlevel"));
-              },
-              updateTeXclass: function (t) {
-                t &&
-                  (this.prevClass = t.prevClass,
-                    delete t.prevClass,
-                    this.prevLevel = t.prevLevel,
-                    delete t.prevLevel,
-                    this.texClass = t.Get("texClass"));
-              },
-              texSpacing: function () {
-                var e = null != this.prevClass
-                    ? this.prevClass
-                    : t.TEXCLASS.NONE,
-                  i = this.Get("texClass") || t.TEXCLASS.ORD;
-                if (e === t.TEXCLASS.NONE || i === t.TEXCLASS.NONE) return "";
-                e === t.TEXCLASS.VCENTER && (e = t.TEXCLASS.ORD),
-                  i === t.TEXCLASS.VCENTER && (i = t.TEXCLASS.ORD);
-                var n = this.TEXSPACE[e][i];
-                return (this.prevLevel > 0 || this.Get("scriptlevel") > 0) &&
-                    n >= 0
-                  ? ""
-                  : this.TEXSPACELENGTH[Math.abs(n)];
-              },
-              TEXSPACELENGTH: [
-                "",
-                t.LENGTH.THINMATHSPACE,
-                t.LENGTH.MEDIUMMATHSPACE,
-                t.LENGTH.THICKMATHSPACE,
-              ],
-              TEXSPACE: [
-                [0, -1, 2, 3, 0, 0, 0, 1],
-                [-1, -1, 0, 3, 0, 0, 0, 1],
-                [2, 2, 0, 0, 2, 0, 0, 2],
-                [3, 3, 0, 0, 3, 0, 0, 3],
-                [0, 0, 0, 0, 0, 0, 0, 0],
-                [0, -1, 2, 3, 0, 0, 0, 1],
-                [1, 1, 0, 1, 1, 1, 1, 1],
-                [1, -1, 2, 3, 1, 0, 1, 1],
-              ],
-              autoDefault: function (t) {
-                return "";
-              },
-              isSpacelike: function () {
-                return !1;
-              },
-              isEmbellished: function () {
-                return !1;
-              },
-              Core: function () {
-                return this;
-              },
-              CoreMO: function () {
-                return this;
-              },
-              childIndex: function (t) {
-                if (null != t) {
+              {
+                childrenSpacelike: function () {
+                  for (var t = 0, e = this.data.length; t < e; t++) {
+                    if (!this.data[t].isSpacelike()) return !1;
+                  }
+                  return !0;
+                },
+                childEmbellished: function () {
+                  return this.data[0] && this.data[0].isEmbellished();
+                },
+                childCore: function () {
+                  return this.inferRow && this.data[0]
+                    ? this.data[0].Core()
+                    : this.data[0];
+                },
+                childCoreMO: function () {
+                  return this.data[0] ? this.data[0].CoreMO() : null;
+                },
+                setChildTeXclass: function (t) {
+                  return (
+                    this.data[0] &&
+                    ((t = this.data[0].setTeXclass(t)),
+                      this.updateTeXclass(this.data[0])), t
+                  );
+                },
+                setBaseTeXclasses: function (e) {
+                  this.getPrevClass(e),
+                    (this.texClass = null),
+                    this.data[0]
+                      ? this.isEmbellished() || this.data[0].isa(t.mi)
+                        ? ((e = this.data[0].setTeXclass(e)),
+                          this.updateTeXclass(this.Core()))
+                        : (this.data[0].setTeXclass(), (e = this))
+                      : (e = this);
+                  for (var i = 1, n = this.data.length; i < n; i++) {
+                    this.data[i] && this.data[i].setTeXclass();
+                  }
+                  return e;
+                },
+                setSeparateTeXclasses: function (t) {
+                  this.getPrevClass(t);
                   for (var e = 0, i = this.data.length; e < i; e++) {
-                    if (t === this.data[e]) return e;
+                    this.data[e] && this.data[e].setTeXclass();
                   }
-                }
+                  return (
+                    this.isEmbellished() &&
+                    this.updateTeXclass(this.Core()), this
+                  );
+                },
               },
-              CoreIndex: function () {
-                return (this.inferRow && this.data[0] || this).childIndex(
-                  this.Core(),
-                );
-              },
-              hasNewline: function () {
-                if (this.isEmbellished()) {
-                  return this.CoreMO().hasNewline();
-                }
-                if (this.isToken || this.linebreakContainer) return !1;
-                for (
-                  var t = 0, e = this.data.length;
-                  t < e;
-                  t++
-                ) {
-                  if (this.data[t] && this.data[t].hasNewline()) return !0;
-                }
-                return !1;
-              },
-              array: function () {
-                return this.inferred ? this.data : [this];
-              },
-              toString: function () {
-                return this.type + "(" + this.data.join(",") + ")";
-              },
-              getAnnotation: function () {
-                return null;
-              },
-            }, {
-              childrenSpacelike: function () {
-                for (var t = 0, e = this.data.length; t < e; t++) {
-                  if (!this.data[t].isSpacelike()) return !1;
-                }
-                return !0;
-              },
-              childEmbellished: function () {
-                return this.data[0] && this.data[0].isEmbellished();
-              },
-              childCore: function () {
-                return this.inferRow && this.data[0]
-                  ? this.data[0].Core()
-                  : this.data[0];
-              },
-              childCoreMO: function () {
-                return this.data[0] ? this.data[0].CoreMO() : null;
-              },
-              setChildTeXclass: function (t) {
-                return this.data[0] &&
-                  (t = this.data[0].setTeXclass(t),
-                    this.updateTeXclass(this.data[0])),
-                  t;
-              },
-              setBaseTeXclasses: function (e) {
-                this.getPrevClass(e),
-                  this.texClass = null,
-                  this.data[0]
-                    ? this.isEmbellished() || this.data[0].isa(t.mi)
-                      ? (e = this.data[0].setTeXclass(e),
-                        this.updateTeXclass(this.Core()))
-                      : (this.data[0].setTeXclass(), e = this)
-                    : e = this;
-                for (
-                  var i = 1, n = this.data.length;
-                  i < n;
-                  i++
-                ) {
-                  this.data[i] && this.data[i].setTeXclass();
-                }
-                return e;
-              },
-              setSeparateTeXclasses: function (t) {
-                this.getPrevClass(t);
-                for (
-                  var e = 0, i = this.data.length;
-                  e < i;
-                  e++
-                ) {
-                  this.data[e] && this.data[e].setTeXclass();
-                }
-                return this.isEmbellished() && this.updateTeXclass(this.Core()),
-                  this;
-              },
-            }),
-              t.mi = t.mbase.Subclass({
+            )),
+              (t.mi = t.mbase.Subclass({
                 type: "mi",
                 isToken: !0,
                 texClass: t.TEXCLASS.ORD,
@@ -2441,8 +2460,9 @@
                   if ("mathvariant" === e) {
                     var i = (this.data[0] || "").toString();
                     return 1 === i.length ||
-                        2 === i.length && i.charCodeAt(0) >= 55296 &&
-                          i.charCodeAt(0) < 56320
+                        (2 === i.length &&
+                          i.charCodeAt(0) >= 55296 &&
+                          i.charCodeAt(0) < 56320)
                       ? t.VARIANT.ITALIC
                       : t.VARIANT.NORMAL;
                   }
@@ -2451,13 +2471,15 @@
                 setTeXclass: function (e) {
                   this.getPrevClass(e);
                   var i = this.data.join("");
-                  return i.length > 1 && i.match(/^[a-z][a-z0-9]*$/i) &&
+                  return (
+                    i.length > 1 &&
+                    i.match(/^[a-z][a-z0-9]*$/i) &&
                     this.texClass === t.TEXCLASS.ORD &&
-                    (this.texClass = t.TEXCLASS.OP, this.autoOP = !0),
-                    this;
+                    ((this.texClass = t.TEXCLASS.OP), (this.autoOP = !0)), this
+                  );
                 },
-              }),
-              t.mn = t.mbase.Subclass({
+              })),
+              (t.mn = t.mbase.Subclass({
                 type: "mn",
                 isToken: !0,
                 texClass: t.TEXCLASS.ORD,
@@ -2468,8 +2490,8 @@
                   mathcolor: t.INHERIT,
                   dir: t.INHERIT,
                 },
-              }),
-              t.mo = t.mbase.Subclass({
+              })),
+              (t.mo = t.mbase.Subclass({
                 type: "mo",
                 isToken: !0,
                 defaults: {
@@ -2534,8 +2556,10 @@
                   var n = this.def;
                   if (!n) {
                     if ("form" === e) {
-                      return this.useMMLspacing &= ~this.SPACE_ATTR.form,
-                        this.getForm();
+                      return (
+                        (this.useMMLspacing &= ~this.SPACE_ATTR.form),
+                          this.getForm()
+                      );
                     }
                     for (
                       var a = this.data.join(""),
@@ -2557,21 +2581,28 @@
                       }
                     }
                     n || (n = this.CheckRange(a)),
-                      !n && i
-                        ? n = {}
-                        : (n || (n = MathJax.Hub.Insert({}, this.defaultDef)),
-                          this.parent
-                            ? this.def = n
-                            : n = MathJax.Hub.Insert({}, n),
-                          n.form = s[0]);
+                      !n && i ? (n = {}) : (n ||
+                        (n = MathJax.Hub.Insert(
+                          {},
+                          this.defaultDef,
+                        )),
+                        this.parent
+                          ? (this.def = n)
+                          : (n = MathJax.Hub.Insert({}, n)),
+                        (n.form = s[0]));
                   }
-                  return this.useMMLspacing &= ~(this.SPACE_ATTR[e] || 0),
-                    null != n[e] ? n[e] : i ? "" : this.defaultDef[e];
+                  return (
+                    (this.useMMLspacing &= ~(this.SPACE_ATTR[e] || 0)),
+                      null != n[e] ? n[e] : i ? "" : this.defaultDef[e]
+                  );
                 },
                 CheckRange: function (e) {
                   var i = e.charCodeAt(0);
-                  i >= 55296 && i < 56320 &&
-                    (i = (i - 55296 << 10) + (e.charCodeAt(1) - 56320) + 65536);
+                  i >= 55296 &&
+                    i < 56320 &&
+                    (i = ((i - 55296) << 10) +
+                      (e.charCodeAt(1) - 56320) +
+                      65536);
                   for (
                     var n = 0, a = this.RANGES.length;
                     n < a && this.RANGES[n][0] <= i;
@@ -2579,14 +2610,22 @@
                   ) {
                     if (i <= this.RANGES[n][1]) {
                       if (this.RANGES[n][3]) {
-                        var s = t.optableDir + "/" + this.RANGES[n][3] + ".js";
-                        this.RANGES[n][3] = null,
-                          MathJax.Hub.RestartAfter(MathJax.Ajax.Require(s));
+                        var s = t.optableDir +
+                          "/" +
+                          this.RANGES[n][3] +
+                          ".js";
+                        (this.RANGES[n][3] = null),
+                          MathJax.Hub.RestartAfter(
+                            MathJax.Ajax.Require(s),
+                          );
                       }
                       var r = t.TEXCLASSNAMES[this.RANGES[n][2]];
-                      return r = this.OPTABLE.infix[e] = t.mo
-                        .OPTYPES["BIN" === r ? "BIN3" : r],
-                        this.makeDef(r);
+                      return (
+                        (r =
+                          this.OPTABLE.infix[e] =
+                            t.mo.OPTYPES["BIN" === r ? "BIN3" : r]),
+                          this.makeDef(r)
+                      );
                     }
                   }
                   return null;
@@ -2595,23 +2634,29 @@
                   null == e[2] && (e[2] = this.defaultDef.texClass),
                     e[3] || (e[3] = {});
                   var i = MathJax.Hub.Insert({}, e[3]);
-                  return i.lspace = this.SPACE[e[0]],
-                    i.rspace = this.SPACE[e[1]],
-                    i.texClass = e[2],
-                    i.texClass === t.TEXCLASS.REL &&
-                    (this.movablelimits ||
-                      this.data.join("").match(/^[a-z]+$/i)) &&
-                    (i.texClass = t.TEXCLASS.OP),
-                    i;
+                  return (
+                    (i.lspace = this.SPACE[e[0]]),
+                      (i.rspace = this.SPACE[e[1]]),
+                      (i.texClass = e[2]),
+                      i.texClass === t.TEXCLASS.REL &&
+                      (this.movablelimits ||
+                        this.data.join("").match(/^[a-z]+$/i)) &&
+                      (i.texClass = t.TEXCLASS.OP),
+                      i
+                  );
                 },
                 getForm: function () {
                   for (
                     var e = this, i = this.parent, n = this.Parent();
                     n && n.isEmbellished();
                   ) {
-                    e = i, i = n.parent, n = n.Parent();
+                    (e = i), (i = n.parent), (n = n.Parent());
                   }
-                  if (i && "mrow" === i.type && 1 !== i.NonSpaceLength()) {
+                  if (
+                    i &&
+                    "mrow" === i.type &&
+                    1 !== i.NonSpaceLength()
+                  ) {
                     if (i.FirstNonSpace() === e) return t.FORM.PREFIX;
                     if (i.LastNonSpace() === e) return t.FORM.POSTFIX;
                   }
@@ -2626,7 +2671,9 @@
                 CoreParent: function () {
                   for (
                     var e = this;
-                    e && e.isEmbellished() && e.CoreMO() === this &&
+                    e &&
+                    e.isEmbellished() &&
+                    e.CoreMO() === this &&
                     !e.isa(t.math);
                   ) {
                     e = e.Parent();
@@ -2638,9 +2685,13 @@
                   if (e.isEmbellished()) return e.CoreMO().data.join("");
                   for (
                     ;
-                    ((e.isa(t.mrow) || e.isa(t.TeXAtom) || e.isa(t.mstyle) ||
-                          e.isa(t.mphantom)) && 1 === e.data.length ||
-                      e.isa(t.munderover)) && e.data[0];
+                    (((e.isa(t.mrow) ||
+                      e.isa(t.TeXAtom) ||
+                      e.isa(t.mstyle) ||
+                      e.isa(t.mphantom)) &&
+                      1 === e.data.length) ||
+                      e.isa(t.munderover)) &&
+                    e.data[0];
                   ) {
                     e = e.data[0];
                   }
@@ -2656,63 +2707,78 @@
                   "\xb9": "1",
                 },
                 remap: function (t, e) {
-                  return t = t.replace(/-/g, "\u2212"),
-                    e &&
-                    1 ===
-                      (t = t.replace(/'/g, "\u2032").replace(/`/g, "\u2035"))
-                        .length &&
-                    (t = e[t] || t),
-                    t;
+                  return (
+                    (t = t.replace(/-/g, "\u2212")),
+                      e &&
+                      1 ===
+                        (t = t
+                          .replace(/'/g, "\u2032")
+                          .replace(/`/g, "\u2035")).length &&
+                      (t = e[t] || t),
+                      t
+                  );
                 },
                 setTeXclass: function (e) {
-                  var i = this.getValues("form", "lspace", "rspace", "fence");
+                  var i = this.getValues(
+                    "form",
+                    "lspace",
+                    "rspace",
+                    "fence",
+                  );
                   return this.useMMLspacing
-                    ? (this.texClass = t.TEXCLASS.NONE, this)
-                    : (i.fence && !this.texClass &&
+                    ? ((this.texClass = t.TEXCLASS.NONE), this)
+                    : (i.fence &&
+                      !this.texClass &&
                       (i.form === t.FORM.PREFIX &&
                         (this.texClass = t.TEXCLASS.OPEN),
                         i.form === t.FORM.POSTFIX &&
                         (this.texClass = t.TEXCLASS.CLOSE)),
-                      this.texClass = this.Get("texClass"),
+                      (this.texClass = this.Get("texClass")),
                       "\u2061" === this.data.join("")
-                        ? (e && (e.texClass = t.TEXCLASS.OP, e.fnOP = !0),
-                          this.texClass = this.prevClass = t.TEXCLASS.NONE,
+                        ? (e &&
+                          ((e.texClass = t.TEXCLASS.OP), (e.fnOP = !0)),
+                          (this.texClass =
+                            this.prevClass =
+                              t.TEXCLASS.NONE),
                           e)
                         : this.adjustTeXclass(e));
                 },
                 adjustTeXclass: function (e) {
                   if (this.texClass === t.TEXCLASS.NONE) return e;
                   if (
-                    e
+                    (e
                       ? (!e.autoOP ||
-                        this.texClass !== t.TEXCLASS.BIN &&
-                          this.texClass !== t.TEXCLASS.REL ||
+                        (this.texClass !== t.TEXCLASS.BIN &&
+                          this.texClass !== t.TEXCLASS.REL) ||
                         (e.texClass = t.TEXCLASS.ORD),
-                        this.prevClass = e.texClass || t.TEXCLASS.ORD,
-                        this.prevLevel = e.Get("scriptlevel"))
-                      : this.prevClass = t.TEXCLASS.NONE,
+                        (this.prevClass = e.texClass || t.TEXCLASS.ORD),
+                        (this.prevLevel = e.Get("scriptlevel")))
+                      : (this.prevClass = t.TEXCLASS.NONE),
                       this.texClass !== t.TEXCLASS.BIN ||
-                      this.prevClass !== t.TEXCLASS.NONE &&
+                      (this.prevClass !== t.TEXCLASS.NONE &&
                         this.prevClass !== t.TEXCLASS.BIN &&
                         this.prevClass !== t.TEXCLASS.OP &&
                         this.prevClass !== t.TEXCLASS.REL &&
                         this.prevClass !== t.TEXCLASS.OPEN &&
-                        this.prevClass !== t.TEXCLASS.PUNCT
+                        this.prevClass !== t.TEXCLASS.PUNCT))
                   ) {
                     if (
                       this.prevClass !== t.TEXCLASS.BIN ||
-                      this.texClass !== t.TEXCLASS.REL &&
+                      (this.texClass !== t.TEXCLASS.REL &&
                         this.texClass !== t.TEXCLASS.CLOSE &&
-                        this.texClass !== t.TEXCLASS.PUNCT
+                        this.texClass !== t.TEXCLASS.PUNCT)
                     ) {
                       if (this.texClass === t.TEXCLASS.BIN) {
                         for (
                           var i = this, n = this.parent;
-                          n && n.parent && n.isEmbellished() &&
+                          n &&
+                          n.parent &&
+                          n.isEmbellished() &&
                           (1 === n.data.length ||
-                            "mrow" !== n.type && n.Core() === i);
+                            ("mrow" !== n.type &&
+                              n.Core() === i));
                         ) {
-                          i = n, n = n.parent;
+                          (i = n), (n = n.parent);
                         }
                         n.data[n.data.length - 1] === i &&
                           (this.texClass = t.TEXCLASS.ORD);
@@ -2721,8 +2787,8 @@
                   } else this.texClass = t.TEXCLASS.ORD;
                   return this;
                 },
-              }),
-              t.mtext = t.mbase.Subclass({
+              })),
+              (t.mtext = t.mbase.Subclass({
                 type: "mtext",
                 isToken: !0,
                 isSpacelike: function () {
@@ -2736,8 +2802,8 @@
                   mathcolor: t.INHERIT,
                   dir: t.INHERIT,
                 },
-              }),
-              t.mspace = t.mbase.Subclass({
+              })),
+              (t.mspace = t.mbase.Subclass({
                 type: "mspace",
                 isToken: !0,
                 isSpacelike: function () {
@@ -2752,15 +2818,20 @@
                   linebreak: t.LINEBREAK.AUTO,
                 },
                 hasDimAttr: function () {
-                  return this.hasValue("width") || this.hasValue("height") ||
-                    this.hasValue("depth");
+                  return (
+                    this.hasValue("width") ||
+                    this.hasValue("height") ||
+                    this.hasValue("depth")
+                  );
                 },
                 hasNewline: function () {
-                  return !this.hasDimAttr() &&
-                    this.Get("linebreak") === t.LINEBREAK.NEWLINE;
+                  return (
+                    !this.hasDimAttr() &&
+                    this.Get("linebreak") === t.LINEBREAK.NEWLINE
+                  );
                 },
-              }),
-              t.ms = t.mbase.Subclass({
+              })),
+              (t.ms = t.mbase.Subclass({
                 type: "ms",
                 isToken: !0,
                 texClass: t.TEXCLASS.ORD,
@@ -2773,8 +2844,8 @@
                   lquote: '"',
                   rquote: '"',
                 },
-              }),
-              t.mglyph = t.mbase.Subclass({
+              })),
+              (t.mglyph = t.mbase.Subclass({
                 type: "mglyph",
                 isToken: !0,
                 texClass: t.TEXCLASS.ORD,
@@ -2787,8 +2858,8 @@
                   height: t.AUTO,
                   valign: "0em",
                 },
-              }),
-              t.mrow = t.mbase.Subclass({
+              })),
+              (t.mrow = t.mbase.Subclass({
                 type: "mrow",
                 isSpacelike: t.mbase.childrenSpacelike,
                 inferred: !1,
@@ -2802,8 +2873,10 @@
                     if (null != this.data[e]) {
                       if (this.data[e].isEmbellished()) {
                         if (t) return !1;
-                        t = !0, this.core = e;
-                      } else if (!this.data[e].isSpacelike()) return !1;
+                        (t = !0), (this.core = e);
+                      } else if (!this.data[e].isSpacelike()) {
+                        return !1;
+                      }
                     }
                   }
                   return t;
@@ -2819,28 +2892,16 @@
                   return t;
                 },
                 FirstNonSpace: function () {
-                  for (
-                    var t = 0, e = this.data.length;
-                    t < e;
-                    t++
-                  ) {
-                    if (
-                      this.data[t] && !this.data[t].isSpacelike()
-                    ) {
+                  for (var t = 0, e = this.data.length; t < e; t++) {
+                    if (this.data[t] && !this.data[t].isSpacelike()) {
                       return this.data[t];
                     }
                   }
                   return null;
                 },
                 LastNonSpace: function () {
-                  for (
-                    var t = this.data.length - 1;
-                    t >= 0;
-                    t--
-                  ) {
-                    if (
-                      this.data[0] && !this.data[t].isSpacelike()
-                    ) {
+                  for (var t = this.data.length - 1; t >= 0; t--) {
+                    if (this.data[0] && !this.data[t].isSpacelike()) {
                       return this.data[t];
                     }
                   }
@@ -2856,18 +2917,25 @@
                     ? this.data[this.core].CoreMO()
                     : this;
                 },
-                toString: function () {
-                  return this.inferred
-                    ? "[" + this.data.join(",") + "]"
-                    : this.SUPER(arguments).toString.call(this);
+                toString: function qqq() {
+                  if (this.inferred) {
+                    return "[" + this.data.join(",") + "]";
+                  }
+
+                  return this.SUPER(qqq).toString.call(this);
                 },
                 setTeXclass: function (e) {
-                  var i, n = this.data.length;
-                  if (!this.open && !this.close || e && e.fnOP) {
+                  var i,
+                    n = this.data.length;
+                  if ((!this.open && !this.close) || (e && e.fnOP)) {
                     for (i = 0; i < n; i++) {
-                      this.data[i] && (e = this.data[i].setTeXclass(e));
+                      this.data[i] &&
+                        (e = this.data[i].setTeXclass(e));
                     }
-                    return this.data[0] && this.updateTeXclass(this.data[0]), e;
+                    return (
+                      this.data[0] &&
+                      this.updateTeXclass(this.data[0]), e
+                    );
                   }
                   for (
                     this.getPrevClass(e), e = null, i = 0;
@@ -2876,17 +2944,18 @@
                   ) {
                     this.data[i] && (e = this.data[i].setTeXclass(e));
                   }
-                  return this.hasOwnProperty("texClass") ||
-                    (this.texClass = t.TEXCLASS.INNER),
-                    this;
+                  return (
+                    this.hasOwnProperty("texClass") ||
+                    (this.texClass = t.TEXCLASS.INNER), this
+                  );
                 },
                 getAnnotation: function (t) {
                   return 1 != this.data.length
                     ? null
                     : this.data[0].getAnnotation(t);
                 },
-              }),
-              t.mfrac = t.mbase.Subclass({
+              })),
+              (t.mfrac = t.mbase.Subclass({
                 type: "mfrac",
                 num: 0,
                 den: 1,
@@ -2913,8 +2982,8 @@
                   return t == this.den || this.Get("texprimestyle");
                 },
                 setTeXclass: t.mbase.setSeparateTeXclasses,
-              }),
-              t.msqrt = t.mbase.Subclass({
+              })),
+              (t.msqrt = t.mbase.Subclass({
                 type: "msqrt",
                 inferRow: !0,
                 linebreakContainer: !0,
@@ -2923,8 +2992,8 @@
                 adjustChild_texprimestyle: function (t) {
                   return !0;
                 },
-              }),
-              t.mroot = t.mbase.Subclass({
+              })),
+              (t.mroot = t.mbase.Subclass({
                 type: "mroot",
                 linebreakContainer: !0,
                 texClass: t.TEXCLASS.ORD,
@@ -2939,8 +3008,8 @@
                   return 0 === t || this.Get("texprimestyle");
                 },
                 setTeXclass: t.mbase.setSeparateTeXclasses,
-              }),
-              t.mstyle = t.mbase.Subclass({
+              })),
+              (t.mstyle = t.mbase.Subclass({
                 type: "mstyle",
                 isSpacelike: t.mbase.childrenSpacelike,
                 isEmbellished: t.mbase.childEmbellished,
@@ -2950,7 +3019,7 @@
                 defaults: {
                   scriptlevel: t.INHERIT,
                   displaystyle: t.INHERIT,
-                  scriptsizemultiplier: Math.sqrt(.5),
+                  scriptsizemultiplier: Math.sqrt(0.5),
                   scriptminsize: "8pt",
                   mathbackground: t.INHERIT,
                   mathcolor: t.INHERIT,
@@ -2984,14 +3053,14 @@
                   fontsize: "fontSize",
                 },
                 setTeXclass: t.mbase.setChildTeXclass,
-              }),
-              t.merror = t.mbase.Subclass({
+              })),
+              (t.merror = t.mbase.Subclass({
                 type: "merror",
                 inferRow: !0,
                 linebreakContainer: !0,
                 texClass: t.TEXCLASS.ORD,
-              }),
-              t.mpadded = t.mbase.Subclass({
+              })),
+              (t.mpadded = t.mbase.Subclass({
                 type: "mpadded",
                 inferRow: !0,
                 isSpacelike: t.mbase.childrenSpacelike,
@@ -3008,8 +3077,8 @@
                   voffset: 0,
                 },
                 setTeXclass: t.mbase.setChildTeXclass,
-              }),
-              t.mphantom = t.mbase.Subclass({
+              })),
+              (t.mphantom = t.mbase.Subclass({
                 type: "mphantom",
                 texClass: t.TEXCLASS.ORD,
                 inferRow: !0,
@@ -3018,8 +3087,8 @@
                 Core: t.mbase.childCore,
                 CoreMO: t.mbase.childCoreMO,
                 setTeXclass: t.mbase.setChildTeXclass,
-              }),
-              t.mfenced = t.mbase.Subclass({
+              })),
+              (t.mfenced = t.mbase.Subclass({
                 type: "mfenced",
                 defaults: {
                   mathbackground: t.INHERIT,
@@ -3031,9 +3100,12 @@
                 addFakeNodes: function () {
                   var e = this.getValues("open", "close", "separators");
                   if (
-                    e.open = e.open.replace(/[ \t\n\r]/g, ""),
-                      e.close = e.close.replace(/[ \t\n\r]/g, ""),
-                      e.separators = e.separators.replace(/[ \t\n\r]/g, ""),
+                    ((e.open = e.open.replace(/[ \t\n\r]/g, "")),
+                      (e.close = e.close.replace(/[ \t\n\r]/g, "")),
+                      (e.separators = e.separators.replace(
+                        /[ \t\n\r]/g,
+                        "",
+                      )),
                       "" !== e.open &&
                       (this.SetData(
                         "open",
@@ -3043,19 +3115,15 @@
                           texClass: t.TEXCLASS.OPEN,
                         }),
                       ),
-                        this.data.open.useMMLspacing = 0),
-                      "" !== e.separators
+                        (this.data.open.useMMLspacing = 0)),
+                      "" !== e.separators)
                   ) {
                     for (; e.separators.length < this.data.length;) {
                       e.separators += e.separators.charAt(
                         e.separators.length - 1,
                       );
                     }
-                    for (
-                      var i = 1, n = this.data.length;
-                      i < n;
-                      i++
-                    ) {
+                    for (var i = 1, n = this.data.length; i < n; i++) {
                       this.data[i] &&
                         (this.SetData(
                           "sep" + i,
@@ -3063,7 +3131,7 @@
                             separator: !0,
                           }),
                         ),
-                          this.data["sep" + i].useMMLspacing = 0);
+                          (this.data["sep" + i].useMMLspacing = 0));
                     }
                   }
                   "" !== e.close &&
@@ -3075,31 +3143,31 @@
                         texClass: t.TEXCLASS.CLOSE,
                       }),
                     ),
-                      this.data.close.useMMLspacing = 0);
+                      (this.data.close.useMMLspacing = 0));
                 },
                 texClass: t.TEXCLASS.OPEN,
                 setTeXclass: function (e) {
                   this.addFakeNodes(),
                     this.getPrevClass(e),
-                    this.data.open && (e = this.data.open.setTeXclass(e)),
+                    this.data.open &&
+                    (e = this.data.open.setTeXclass(e)),
                     this.data[0] && (e = this.data[0].setTeXclass(e));
-                  for (
-                    var i = 1, n = this.data.length;
-                    i < n;
-                    i++
-                  ) {
+                  for (var i = 1, n = this.data.length; i < n; i++) {
                     this.data["sep" + i] &&
                     (e = this.data["sep" + i].setTeXclass(e)),
-                      this.data[i] && (e = this.data[i].setTeXclass(e));
+                      this.data[i] &&
+                      (e = this.data[i].setTeXclass(e));
                   }
-                  return this.data.close &&
+                  return (
+                    this.data.close &&
                     (e = this.data.close.setTeXclass(e)),
-                    this.updateTeXclass(this.data.open),
-                    this.texClass = t.TEXCLASS.INNER,
-                    e;
+                      this.updateTeXclass(this.data.open),
+                      (this.texClass = t.TEXCLASS.INNER),
+                      e
+                  );
                 },
-              }),
-              t.menclose = t.mbase.Subclass({
+              })),
+              (t.menclose = t.mbase.Subclass({
                 type: "menclose",
                 inferRow: !0,
                 linebreakContainer: !0,
@@ -3110,8 +3178,8 @@
                   texClass: t.TEXCLASS.ORD,
                 },
                 setTeXclass: t.mbase.setSeparateTeXclasses,
-              }),
-              t.msubsup = t.mbase.Subclass({
+              })),
+              (t.msubsup = t.mbase.Subclass({
                 type: "msubsup",
                 base: 0,
                 sub: 1,
@@ -3144,18 +3212,18 @@
                   return t === this.sub || this.Get("texprimestyle");
                 },
                 setTeXclass: t.mbase.setBaseTeXclasses,
-              }),
-              t.msub = t.msubsup.Subclass({ type: "msub" }),
-              t.msup = t.msubsup.Subclass({ type: "msup", sub: 2, sup: 1 }),
-              t.mmultiscripts = t.msubsup.Subclass({
+              })),
+              (t.msub = t.msubsup.Subclass({ type: "msub" })),
+              (t.msup = t.msubsup.Subclass({ type: "msup", sub: 2, sup: 1 })),
+              (t.mmultiscripts = t.msubsup.Subclass({
                 type: "mmultiscripts",
                 adjustChild_texprimestyle: function (t) {
                   return t % 2 == 1 || this.Get("texprimestyle");
                 },
-              }),
-              t.mprescripts = t.mbase.Subclass({ type: "mprescripts" }),
-              t.none = t.mbase.Subclass({ type: "none" }),
-              t.munderover = t.mbase.Subclass({
+              })),
+              (t.mprescripts = t.mbase.Subclass({ type: "mprescripts" })),
+              (t.none = t.mbase.Subclass({ type: "none" })),
+              (t.munderover = t.mbase.Subclass({
                 type: "munderover",
                 base: 0,
                 under: 1,
@@ -3184,37 +3252,46 @@
                       : t.TEXCLASS.ORD
                     : "accent" === e && this.data[this.over]
                     ? this.data[this.over].CoreMO().Get("accent")
-                    : !("accentunder" !== e || !this.data[this.under]) &&
-                      this.data[this.under].CoreMO().Get("accent");
+                    : !(
+                      "accentunder" !== e || !this.data[this.under]
+                    ) && this.data[this.under].CoreMO().Get("accent");
                 },
                 adjustChild_displaystyle: function (t) {
                   return !(t > 0) && this.Get("displaystyle");
                 },
                 adjustChild_scriptlevel: function (t) {
                   var e = this.Get("scriptlevel"),
-                    i = this.data[this.base] && !this.Get("displaystyle") &&
-                      this.data[this.base].CoreMO().Get("movablelimits");
-                  return t != this.under || !i && this.Get("accentunder") ||
+                    i = this.data[this.base] &&
+                      !this.Get("displaystyle") &&
+                      this.data[this.base]
+                        .CoreMO()
+                        .Get("movablelimits");
+                  return (
+                    t != this.under ||
+                    (!i && this.Get("accentunder")) ||
                     e++,
-                    t != this.over || !i && this.Get("accent") || e++,
-                    e;
+                      t != this.over || (!i && this.Get("accent")) || e++,
+                      e
+                  );
                 },
                 adjustChild_texprimestyle: function (t) {
-                  return !(t !== this.base || !this.data[this.over]) ||
-                    this.Get("texprimestyle");
+                  return (
+                    !(t !== this.base || !this.data[this.over]) ||
+                    this.Get("texprimestyle")
+                  );
                 },
                 setTeXclass: t.mbase.setBaseTeXclasses,
-              }),
-              t.munder = t.munderover.Subclass({ type: "munder" }),
-              t.mover = t.munderover.Subclass({
+              })),
+              (t.munder = t.munderover.Subclass({ type: "munder" })),
+              (t.mover = t.munderover.Subclass({
                 type: "mover",
                 over: 1,
                 under: 2,
                 sup: 1,
                 sub: 2,
                 ACCENTS: ["", "accent", "accentunder"],
-              }),
-              t.mtable = t.mbase.Subclass({
+              })),
+              (t.mtable = t.mbase.Subclass({
                 type: "mtable",
                 defaults: {
                   mathbackground: t.INHERIT,
@@ -3275,11 +3352,7 @@
                 },
                 linebreakContainer: !0,
                 Append: function () {
-                  for (
-                    var e = 0, i = arguments.length;
-                    e < i;
-                    e++
-                  ) {
+                  for (var e = 0, i = arguments.length; e < i; e++) {
                     arguments[e] instanceof t.mtr ||
                       arguments[e] instanceof t.mlabeledtr ||
                       (arguments[e] = t.mtr(arguments[e]));
@@ -3287,8 +3360,8 @@
                   this.SUPER(arguments).Append.apply(this, arguments);
                 },
                 setTeXclass: t.mbase.setSeparateTeXclasses,
-              }),
-              t.mtr = t.mbase.Subclass({
+              })),
+              (t.mtr = t.mbase.Subclass({
                 type: "mtr",
                 defaults: {
                   mathbackground: t.INHERIT,
@@ -3300,23 +3373,23 @@
                 inheritFromMe: !0,
                 noInherit: {
                   mrow: { rowalign: !0, columnalign: !0, groupalign: !0 },
-                  mtable: { rowalign: !0, columnalign: !0, groupalign: !0 },
+                  mtable: {
+                    rowalign: !0,
+                    columnalign: !0,
+                    groupalign: !0,
+                  },
                 },
                 linebreakContainer: !0,
                 Append: function () {
-                  for (
-                    var e = 0, i = arguments.length;
-                    e < i;
-                    e++
-                  ) {
+                  for (var e = 0, i = arguments.length; e < i; e++) {
                     arguments[e] instanceof t.mtd ||
                       (arguments[e] = t.mtd(arguments[e]));
                   }
                   this.SUPER(arguments).Append.apply(this, arguments);
                 },
                 setTeXclass: t.mbase.setSeparateTeXclasses,
-              }),
-              t.mtd = t.mbase.Subclass({
+              })),
+              (t.mtd = t.mbase.Subclass({
                 type: "mtd",
                 inferRow: !0,
                 linebreakContainer: !0,
@@ -3333,8 +3406,8 @@
                   groupalign: t.INHERIT,
                 },
                 setTeXclass: t.mbase.setSeparateTeXclasses,
-              }),
-              t.maligngroup = t.mbase.Subclass({
+              })),
+              (t.maligngroup = t.mbase.Subclass({
                 type: "maligngroup",
                 isSpacelike: function () {
                   return !0;
@@ -3349,8 +3422,8 @@
                   mrow: { groupalign: !0 },
                   mtable: { groupalign: !0 },
                 },
-              }),
-              t.malignmark = t.mbase.Subclass({
+              })),
+              (t.malignmark = t.mbase.Subclass({
                 type: "malignmark",
                 defaults: {
                   mathbackground: t.INHERIT,
@@ -3360,9 +3433,9 @@
                 isSpacelike: function () {
                   return !0;
                 },
-              }),
-              t.mlabeledtr = t.mtr.Subclass({ type: "mlabeledtr" }),
-              t.maction = t.mbase.Subclass({
+              })),
+              (t.mlabeledtr = t.mtr.Subclass({ type: "mlabeledtr" })),
+              (t.maction = t.mbase.Subclass({
                 type: "maction",
                 defaults: {
                   mathbackground: t.INHERIT,
@@ -3387,12 +3460,15 @@
                 },
                 setTeXclass: function (e) {
                   this.Get("actiontype") === t.ACTIONTYPE.TOOLTIP &&
-                    this.data[1] && this.data[1].setTeXclass();
+                    this.data[1] &&
+                    this.data[1].setTeXclass();
                   var i = this.selected();
-                  return e = i.setTeXclass(e), this.updateTeXclass(i), e;
+                  return (
+                    (e = i.setTeXclass(e)), this.updateTeXclass(i), e
+                  );
                 },
-              }),
-              t.semantics = t.mbase.Subclass({
+              })),
+              (t.semantics = t.mbase.Subclass({
                 type: "semantics",
                 notParent: !0,
                 isEmbellished: t.mbase.childEmbellished,
@@ -3406,11 +3482,7 @@
                     for (var i = 0, n = this.data.length; i < n; i++) {
                       var a = this.data[i].Get("encoding");
                       if (a) {
-                        for (
-                          var s = 0, r = e.length;
-                          s < r;
-                          s++
-                        ) {
+                        for (var s = 0, r = e.length; s < r; s++) {
                           if (e[s] === a) return this.data[i];
                         }
                       }
@@ -3418,8 +3490,8 @@
                   }
                   return null;
                 },
-              }),
-              t.annotation = t.mbase.Subclass({
+              })),
+              (t.annotation = t.mbase.Subclass({
                 type: "annotation",
                 isChars: !0,
                 linebreakContainer: !0,
@@ -3430,8 +3502,8 @@
                   name: "",
                   src: null,
                 },
-              }),
-              t["annotation-xml"] = t.mbase.Subclass({
+              })),
+              (t["annotation-xml"] = t.mbase.Subclass({
                 type: "annotation-xml",
                 linebreakContainer: !0,
                 defaults: {
@@ -3441,8 +3513,8 @@
                   name: "",
                   src: null,
                 },
-              }),
-              t.math = t.mstyle.Subclass({
+              })),
+              (t.math = t.mstyle.Subclass({
                 type: "math",
                 defaults: {
                   mathvariant: t.VARIANT.NORMAL,
@@ -3461,7 +3533,7 @@
                   "altimg-valign": "",
                   alttext: "",
                   cdgroup: "",
-                  scriptsizemultiplier: Math.sqrt(.5),
+                  scriptsizemultiplier: Math.sqrt(0.5),
                   scriptminsize: "8px",
                   infixlinebreakstyle: t.LINEBREAKSTYLE.BEFORE,
                   lineleading: "1ex",
@@ -3486,8 +3558,8 @@
                     ? null
                     : this.data[0].getAnnotation(t);
                 },
-              }),
-              t.chars = t.mbase.Subclass({
+              })),
+              (t.chars = t.mbase.Subclass({
                 type: "chars",
                 Append: function () {
                   this.data.push.apply(this.data, arguments);
@@ -3498,8 +3570,8 @@
                 toString: function () {
                   return this.data.join("");
                 },
-              }),
-              t.entity = t.mbase.Subclass({
+              })),
+              (t.entity = t.mbase.Subclass({
                 type: "entity",
                 Append: function () {
                   this.data.push.apply(this.data, arguments);
@@ -3515,18 +3587,20 @@
                   var t = this.value();
                   return t <= 65535
                     ? String.fromCharCode(t)
-                    : (t -= 65536,
+                    : ((t -= 65536),
                       String.fromCharCode(
                         55296 + (t >> 10),
                         56320 + (1023 & t),
                       ));
                 },
-              }),
-              t.xml = t.mbase.Subclass({
+              })),
+              (t.xml = t.mbase.Subclass({
                 type: "xml",
                 Init: function () {
-                  return this.div = document.createElement("div"),
-                    this.SUPER(arguments).Init.apply(this, arguments);
+                  return (
+                    (this.div = document.createElement("div")),
+                      this.SUPER(arguments).Init.apply(this, arguments)
+                  );
                 },
                 Append: function () {
                   for (var t = 0, e = arguments.length; t < e; t++) {
@@ -3535,7 +3609,9 @@
                   }
                 },
                 Import: function (t) {
-                  if (document.importNode) return document.importNode(t, !0);
+                  if (document.importNode) {
+                    return document.importNode(t, !0);
+                  }
                   var e, i, n;
                   if (1 === t.nodeType) {
                     for (
@@ -3546,7 +3622,9 @@
                       i++
                     ) {
                       var a = t.attributes[i];
-                      a.specified && null != a.nodeValue && "" != a.nodeValue &&
+                      a.specified &&
+                      null != a.nodeValue &&
+                      "" != a.nodeValue &&
                       e.setAttribute(a.nodeName, a.nodeValue),
                         "style" === a.nodeName &&
                         (e.style.cssText = a.nodeValue);
@@ -3555,12 +3633,13 @@
                   } else if (3 === t.nodeType || 4 === t.nodeType) {
                     e = document.createTextNode(t.nodeValue);
                   } else {
-                    if (8 !== t.nodeType) return document.createTextNode("");
+                    if (8 !== t.nodeType) {
+                      return document.createTextNode("");
+                    }
                     e = document.createComment(t.nodeValue);
                   }
                   for (i = 0, n = t.childNodes.length; i < n; i++) {
-                    e
-                      .appendChild(this.Import(t.childNodes[i]));
+                    e.appendChild(this.Import(t.childNodes[i]));
                   }
                   return e;
                 },
@@ -3570,8 +3649,8 @@
                 toString: function () {
                   return this.div.innerHTML;
                 },
-              }),
-              t.TeXAtom = t.mbase.Subclass({
+              })),
+              (t.TeXAtom = t.mbase.Subclass({
                 type: "texatom",
                 linebreakContainer: !0,
                 inferRow: !0,
@@ -3581,11 +3660,13 @@
                 CoreMO: t.mbase.childCoreMO,
                 isEmbellished: t.mbase.childEmbellished,
                 setTeXclass: function (t) {
-                  return this.data[0].setTeXclass(), this.adjustTeXclass(t);
+                  return (
+                    this.data[0].setTeXclass(), this.adjustTeXclass(t)
+                  );
                 },
                 adjustTeXclass: t.mo.prototype.adjustTeXclass,
-              }),
-              t.NULL = t.mbase().With({ type: "null" });
+              })),
+              (t.NULL = t.mbase().With({ type: "null" }));
             var e = t.TEXCLASS,
               i = {
                 ORD: [0, 0, e.ORD],
