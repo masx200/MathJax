@@ -318,7 +318,7 @@
               },
               prototype: {
                 Init: function () {},
-                SUPER: function (fncallee) {return fncallee.SUPER},
+                SUPER: function (fncall) {return fncall.SUPER},
                 can: function (t) {
                   return "function" == typeof this[t];
                 },
@@ -399,11 +399,8 @@
             var e = u.MathJax;
             e || (e = u.MathJax = {});
             var i = function (t) {
-              var e = function () {
-                return arguments.callee.execute.apply(
-                  arguments.callee,
-                  arguments,
-                );
+              var e = function ccc() {
+                  return ccc.execute.apply(ccc, arguments);
               };
               for (var n in i.prototype) {
                 i.prototype.hasOwnProperty(n) &&
