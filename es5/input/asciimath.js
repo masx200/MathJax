@@ -3351,13 +3351,13 @@
                   },
                 },
                 linebreakContainer: !0,
-                Append: function () {
+                Append: function www() {
                   for (var e = 0, i = arguments.length; e < i; e++) {
                     arguments[e] instanceof t.mtr ||
                       arguments[e] instanceof t.mlabeledtr ||
                       (arguments[e] = t.mtr(arguments[e]));
                   }
-                  this.SUPER(arguments).Append.apply(this, arguments);
+                  this.SUPER(www).Append.apply(this, arguments);
                 },
                 setTeXclass: t.mbase.setSeparateTeXclasses,
               })),
@@ -3380,12 +3380,12 @@
                   },
                 },
                 linebreakContainer: !0,
-                Append: function () {
+                Append: function eee() {
                   for (var e = 0, i = arguments.length; e < i; e++) {
                     arguments[e] instanceof t.mtd ||
                       (arguments[e] = t.mtd(arguments[e]));
                   }
-                  this.SUPER(arguments).Append.apply(this, arguments);
+                  this.SUPER(eee).Append.apply(this, arguments);
                 },
                 setTeXclass: t.mbase.setSeparateTeXclasses,
               })),
@@ -3596,10 +3596,10 @@
               })),
               (t.xml = t.mbase.Subclass({
                 type: "xml",
-                Init: function () {
+                Init: function rrr() {
                   return (
                     (this.div = document.createElement("div")),
-                      this.SUPER(arguments).Init.apply(this, arguments)
+                      this.SUPER(rrr).Init.apply(this, arguments)
                   );
                 },
                 Append: function () {
