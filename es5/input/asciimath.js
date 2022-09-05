@@ -264,17 +264,19 @@
                 }
                 return e;
               };
-            (e.Object = n({
-              constructor: function aaa() {
+            var CONSTRUCTOR = function () {
+              return function aaa() {
                 return aaa.Init.call(
                   this,
                   Object.assign(arguments, { call: aaa }),
                 );
-              },
+              };
+            };
+
+            (e.Object = n({
+              constructor: CONSTRUCTOR(),
               Subclass: function (t, e) {
-                var n = function () {
-                  return arguments.callee.Init.call(this, arguments);
-                };
+                var n = CONSTRUCTOR();
                 return (
                   (n.SUPER = this),
                     (n.Init = this.Init),
